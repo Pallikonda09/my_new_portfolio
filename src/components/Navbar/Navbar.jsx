@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { animated, useSpring } from "@react-spring/web";
+import Image from "next/image";
+import Link from "next/link";
 import { Trail } from "./TrailText";
 import LetsTalk from "./LetsTalk";
 import MenuButton from "./MenuButton";
-import Link from "next/link";
 import ThemeButton from "./MusicButton";
 
 const EMAIL = "adityapallikonda66335@gmail.com";
@@ -23,13 +24,17 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [open, set] = useState(false);
 
-  useEffect(() => { set(true); }, []);
+  useEffect(() => {
+    set(true);
+  }, []);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
     if (mobileOpen) {
       document.body.style.overflow = "hidden";
-      return () => { document.body.style.overflow = ""; };
+      return () => {
+        document.body.style.overflow = "";
+      };
     }
   }, [mobileOpen]);
 
@@ -52,10 +57,21 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Mobile top bar */}
       <div className="fixed top-0 left-0 z-[100001] w-full py-5 lg:hidden px-5">
         <div className="flex items-center justify-between w-full font-extrabold">
-          <Link href="/" onClick={(e) => handleMobileNav(e, "top")} className="flex items-center gap-2.5 cursor-pointer">
-            <img src="/avatar-logo.jpg" alt="Logo" className="w-8 h-8 rounded-full object-cover border border-fg/10" />
+          <Link
+            href="/"
+            onClick={(e) => handleMobileNav(e, "top")}
+            className="flex items-center gap-2.5 cursor-pointer"
+          >
+            <Image
+              src="/avatar-logo.jpg"
+              alt="Logo"
+              width={32}
+              height={32}
+              className="w-8 h-8 rounded-full object-cover border border-fg/10"
+            />
             <span className="tracking-wider font-semibold text-lg text-fg">ADITYA</span>
           </Link>
           <button
@@ -74,13 +90,28 @@ export default function Navbar() {
         </div>
       </div>
 
-      <div className={`fixed inset-0 z-[100000] lg:hidden transition-opacity duration-300 ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
-        <div className="absolute inset-0 bg-bg" onClick={() => { setMobileOpen(false); setRotate({ transform: "rotate(0deg)" }); }} />
+      {/* Mobile full-screen menu */}
+      <div
+        className={`fixed inset-0 z-[100000] lg:hidden transition-opacity duration-300 ${
+          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className="absolute inset-0 bg-bg"
+          onClick={() => {
+            setMobileOpen(false);
+            setRotate({ transform: "rotate(0deg)" });
+          }}
+        />
         <div className="relative z-10 h-full w-full flex flex-col pt-24 pb-8 px-6">
           <nav className="flex flex-col gap-1">
             {MOBILE_NAV_ITEMS.map((item, i) => (
-              <a key={item.target} href={`#${item.target}`} onClick={(e) => handleMobileNav(e, item.target)}
-                 className="flex items-center justify-between py-4 border-b border-theme-border text-fg text-3xl font-semibold">
+              <a
+                key={item.target}
+                href={`#${item.target}`}
+                onClick={(e) => handleMobileNav(e, item.target)}
+                className="flex items-center justify-between py-4 border-b border-theme-border text-fg text-3xl font-semibold"
+              >
                 <span>{item.label}</span>
                 <span className="text-fg-muted text-base">0{i + 1}</span>
               </a>
@@ -88,24 +119,52 @@ export default function Navbar() {
           </nav>
           <div className="mt-auto pt-8 flex flex-col gap-3">
             <p className="text-fg-muted text-xs tracking-[0.2em] uppercase">Get in touch</p>
-            <a href={`mailto:${EMAIL}`} onClick={() => setMobileOpen(false)} className="flex items-center justify-between bg-fg text-bg rounded-full px-5 py-4 text-sm font-semibold">
-              <span>EMAIL</span><span>↗</span>
+            <a
+              href={`mailto:${EMAIL}`}
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-between bg-fg text-bg rounded-full px-5 py-4 text-sm font-semibold"
+            >
+              <span>EMAIL</span>
+              <span>↗</span>
             </a>
-            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" onClick={() => setMobileOpen(false)} className="flex items-center justify-between border-2 border-fg text-fg rounded-full px-5 py-4 text-sm font-semibold">
-              <span>WHATSAPP</span><span>↗</span>
+            <a
+              href={WHATSAPP_URL}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-between border-2 border-fg text-fg rounded-full px-5 py-4 text-sm font-semibold"
+            >
+              <span>WHATSAPP</span>
+              <span>↗</span>
             </a>
-            <a href={LINKEDIN_URL} target="_blank" rel="noreferrer" onClick={() => setMobileOpen(false)} className="flex items-center justify-between border-2 border-fg text-fg rounded-full px-5 py-4 text-sm font-semibold">
-              <span>LINKEDIN</span><span>↗</span>
+            <a
+              href={LINKEDIN_URL}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center justify-between border-2 border-fg text-fg rounded-full px-5 py-4 text-sm font-semibold"
+            >
+              <span>LINKEDIN</span>
+              <span>↗</span>
             </a>
           </div>
         </div>
       </div>
 
+      {/* Desktop navbar */}
       <div className="fixed top-0 left-0 w-full px-6 lg:px-20 z-[100001] hidden lg:block">
         <div className="items-start justify-between flex pt-14 pb-10">
           <Link href="/" className="flex items-center gap-3">
-            <img src="/avatar-logo.jpg" alt="Logo" className="w-10 h-10 rounded-full object-cover border border-fg/10" />
-            <span className="font-AeonikMedium text-2xl tracking-wider text-fg uppercase">ADITYA PALLIKONDA .</span>
+            <Image
+              src="/avatar-logo.jpg"
+              alt="Logo"
+              width={40}
+              height={40}
+              className="w-10 h-10 rounded-full object-cover border border-fg/10"
+            />
+            <span className="font-AeonikMedium text-2xl tracking-wider text-fg uppercase">
+              ADITYA PALLIKONDA .
+            </span>
           </Link>
           <div className="hidden lg:flex items-center justify-around font-AeonikMedium">
             <Trail open={open} className="flex">

@@ -24,28 +24,44 @@ const scrollToSection = (id) => {
 const Menu = ({ open, onOutsideClick, onClose }) => {
   const ref = useRef();
 
-  const handleChildClick = (event) => {
-    if (ref.current && !ref.current.contains(event.target)) onOutsideClick(event);
-  };
-
+  // Handler lives inside the effect, so the only dependency is onOutsideClick
   useEffect(() => {
-    document.addEventListener("click", handleChildClick);
-    return () => document.removeEventListener("click", handleChildClick);
-  }, []);
+    const handleOutsideClick = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        onOutsideClick?.(event);
+      }
+    };
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, [onOutsideClick]);
 
-  const [contents, contentsApi] = useSpring(() => ({ from: { y: 100, opacity: 0, transform: "rotate(20deg)" } }));
-  const [news, newsApi] = useSpring(() => ({ from: { y: 100, opacity: 0, transform: "rotate(-20deg)" } }));
+  const [contents, contentsApi] = useSpring(() => ({
+    from: { y: 100, opacity: 0, transform: "rotate(20deg)" },
+  }));
+  const [news, newsApi] = useSpring(() => ({
+    from: { y: 100, opacity: 0, transform: "rotate(-20deg)" },
+  }));
   const [hidden, setHidden] = useState(true);
 
   useEffect(() => {
+    let timeoutId;
     if (open === false) {
-      setTimeout(() => setHidden(false), 500);
+      timeoutId = setTimeout(() => setHidden(false), 500);
     } else {
       setHidden(true);
     }
-    contentsApi.start({ y: open ? 0 : 100, opacity: open ? 1 : 0, transform: open ? `rotate(0deg)` : `rotate(20deg)` });
-    newsApi.start({ y: open ? 0 : 100, opacity: open ? 1 : 0, transform: open ? `rotate(0deg)` : `rotate(-20deg)` });
-  }, [open]);
+    contentsApi.start({
+      y: open ? 0 : 100,
+      opacity: open ? 1 : 0,
+      transform: open ? "rotate(0deg)" : "rotate(20deg)",
+    });
+    newsApi.start({
+      y: open ? 0 : 100,
+      opacity: open ? 1 : 0,
+      transform: open ? "rotate(0deg)" : "rotate(-20deg)",
+    });
+    return () => clearTimeout(timeoutId);
+  }, [open, contentsApi, newsApi]);
 
   const navItems = [
     { label: "HOME", target: "top" },
@@ -66,21 +82,41 @@ const Menu = ({ open, onOutsideClick, onClose }) => {
         <div className="absolute top-[4rem] right-0 w-[20rem]" ref={ref}>
           <a.div className="rounded-xl bg-bg-alt text-fg flex flex-col font-Aeonik text-3xl p-8" style={contents}>
             {navItems.map((item, i) => (
-              <a key={item.target} href={`#${item.target}`} onClick={(e) => handleNavClick(e, item.target)}
-                 className={`flex items-center justify-between transition-colors hover:text-brblue cursor-pointer ${i === 0 ? "pb-3" : i === navItems.length - 1 ? "pt-3" : "py-3"}`}>
+              <a
+                key={item.target}
+                href={`#${item.target}`}
+                onClick={(e) => handleNavClick(e, item.target)}
+                className={`flex items-center justify-between transition-colors hover:text-brblue cursor-pointer ${
+                  i === 0 ? "pb-3" : i === navItems.length - 1 ? "pt-3" : "py-3"
+                }`}
+              >
                 <span>{item.label}</span>
                 <span className="text-fg-muted">•</span>
               </a>
             ))}
           </a.div>
           <a.div className="rounded-xl bg-bg-alt text-fg flex flex-col p-8 my-2" style={news}>
-            <div className="font-Aeonik text-3xl leading-tight">Open for roles<br />&amp; projects.</div>
+            <div className="font-Aeonik text-3xl leading-tight">
+              Open for roles<br />&amp; projects.
+            </div>
             <div className="flex flex-col gap-2 mt-5">
-              <a href={`mailto:${EMAIL}`} onClick={() => onClose && onClose()} className="flex items-center justify-between bg-fg text-bg rounded-xl px-4 py-3 text-sm tracking-widest font-semibold transition-transform hover:-translate-y-0.5">
-                <span>EMAIL ME</span><span>↗</span>
+              <a
+                href={`mailto:${EMAIL}`}
+                onClick={() => onClose && onClose()}
+                className="flex items-center justify-between bg-fg text-bg rounded-xl px-4 py-3 text-sm tracking-widest font-semibold transition-transform hover:-translate-y-0.5"
+              >
+                <span>EMAIL ME</span>
+                <span>↗</span>
               </a>
-              <a href={GITHUB_URL} target="_blank" rel="noreferrer" onClick={() => onClose && onClose()} className="flex items-center justify-between border-2 border-fg text-fg rounded-xl px-4 py-3 text-sm tracking-widest font-semibold hover:bg-accent-soft">
-                <span>GITHUB</span><span>↗</span>
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => onClose && onClose()}
+                className="flex items-center justify-between border-2 border-fg text-fg rounded-xl px-4 py-3 text-sm tracking-widest font-semibold hover:bg-accent-soft"
+              >
+                <span>GITHUB</span>
+                <span>↗</span>
               </a>
             </div>
           </a.div>
